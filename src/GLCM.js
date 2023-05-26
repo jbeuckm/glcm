@@ -1,5 +1,5 @@
 // @ts-nocheck
-
+'use strict'
 // import * as twgl from 'twgl.js/dist/5.x/twgl-full.module.js'
 import { getWindows } from './getWindows.js'
 

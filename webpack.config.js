@@ -2,7 +2,8 @@ const path = require('path')
 
 const isProduction = process.env.NODE_ENV == 'production'
 
-const config = {
+module.exports = {
+  mode: isProduction ? 'production' : 'development',
   entry: './src/GLCM.js',
   output: {
     path: path.resolve(__dirname, 'lib'),
@@ -18,16 +19,7 @@ const config = {
   //     },
   //   ],
   // },
-  resolve: {
-    extensions: ['.ts', '.js'],
-  },
-}
-
-module.exports = () => {
-  if (isProduction) {
-    config.mode = 'production'
-  } else {
-    config.mode = 'development'
-  }
-  return config
+  // resolve: {
+  //   extensions: ['.ts', '.js'],
+  // },
 }
