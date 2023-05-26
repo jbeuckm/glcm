@@ -1,24 +1,22 @@
 // @ts-nocheck
 
-import * as twgl from 'twgl.js/dist/5.x/twgl-full.module.js';
-import { getWindows } from './getWindows.js';
-import { sampleTexture } from './sampleTexture.js';
-import { sampleFramebuffer } from './sampleFramebuffer.js';
+// import * as twgl from "twgl.js/dist/5.x/twgl-full.module.js";
+import { getWindows } from "./getWindows.js";
 
-import nvs from './shaders/neighbor_vertex.js';
-import nfs from './shaders/neighbor_fragment.js';
-import gvs from './shaders/glcm_vertex.js';
-import gfs from './shaders/glcm_fragment.js';
-import cvs from './shaders/correlation_vertex.js';
-import cfs from './shaders/correlation_fragment.js';
-import dvs from './shaders/display_vertex.js';
-import dfs from './shaders/display_fragment.js';
+import nvs from "./shaders/neighbor_vertex.js";
+import nfs from "./shaders/neighbor_fragment.js";
+import gvs from "./shaders/glcm_vertex.js";
+import gfs from "./shaders/glcm_fragment.js";
+import cvs from "./shaders/correlation_vertex.js";
+import cfs from "./shaders/correlation_fragment.js";
+import dvs from "./shaders/display_vertex.js";
+import dfs from "./shaders/display_fragment.js";
 
 export class GLCM {
   constructor(gl) {
-    var ext = gl.getExtension('OES_texture_float');
+    var ext = gl.getExtension("OES_texture_float");
     if (!ext) {
-      throw 'requires OES_texture_float';
+      throw "requires OES_texture_float";
     }
 
     this.gl = gl;
@@ -43,17 +41,13 @@ export class GLCM {
         gl,
         {
           src,
-          // format: gl.RGBA,
-          // type: gl.FLOAT,
           min: gl.NEAREST,
           mag: gl.NEAREST,
           wrap: gl.CLAMP_TO_EDGE,
-          crossOrigin: '',
+          crossOrigin: "",
         },
         (err, texture, image) => {
           if (err) return reject(err);
-
-          sampleTexture(gl, texture);
 
           this.texture = texture;
           this.image = image;
@@ -68,14 +62,7 @@ export class GLCM {
   }
 
   findNeighbors({ angle, distance }, renderToCanvas = false) {
-    const { gl, width, height, quadBufferInfo, neighborProgramInfo } = this;
-    console.log('findNeighbors', {
-      gl,
-      width,
-      height,
-      quadBufferInfo,
-      neighborProgramInfo,
-    });
+    const { gl, width, height, quadBufferInfo } = this;
 
     gl.useProgram(this.neighborProgramInfo.program);
 
@@ -88,7 +75,7 @@ export class GLCM {
           gl,
           [
             {
-              // type: gl.FLOAT,
+              type: gl.FLOAT,
               min: gl.NEAREST,
               mag: gl.NEAREST,
               wrap: gl.CLAMP_TO_EDGE,
@@ -111,8 +98,7 @@ export class GLCM {
     twgl.bindFramebufferInfo(gl, neighborsFbi);
 
     twgl.drawBufferInfo(gl, gl.TRIANGLES, quadBufferInfo);
-    console.log(neighborsFbi);
-    sampleFramebuffer(gl, neighborsFbi.framebuffer);
+
     return neighborsFbi;
   }
 
@@ -166,7 +152,7 @@ export class GLCM {
           gl,
           [
             {
-              // type: gl.FLOAT,
+              type: gl.FLOAT,
               min: gl.NEAREST,
               mag: gl.NEAREST,
               wrap: gl.CLAMP_TO_EDGE,
@@ -231,7 +217,7 @@ export class GLCM {
           gl,
           [
             {
-              // type: gl.FLOAT,
+              type: gl.FLOAT,
               min: gl.NEAREST,
               mag: gl.NEAREST,
               wrap: gl.CLAMP_TO_EDGE,

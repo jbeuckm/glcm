@@ -1,0 +1,15 @@
+{
+  "name": "glcm",
+  "version": "0.0.1",
+  "description": "Gray-Level Co-Occurrence Matrix image analyzer with WebGL.",
+  "main": "src/GLCM.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "demo": "simple-server . 3000"
+  },
+  "author": "Joseph Beuckman",
+  "license": "MIT",
+  "dependencies": {
+    "twgl.js": "^5.3.1"
+  }
+}

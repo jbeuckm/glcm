@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 // reach is the number of pixels from window center to edge.
 export function getWindows({ width, height, reach, step, levels }) {
   const locations = [];
