@@ -2,7 +2,6 @@ diff
 .idea/*
 .nyc_output
 build
-lib
 node_modules
 test
 coverage

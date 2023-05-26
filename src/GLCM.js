@@ -1,40 +1,40 @@
 // @ts-nocheck
 
-// import * as twgl from "twgl.js/dist/5.x/twgl-full.module.js";
-import { getWindows } from "./getWindows.js";
+// import * as twgl from 'twgl.js/dist/5.x/twgl-full.module.js'
+import { getWindows } from './getWindows.js'
 
-import nvs from "./shaders/neighbor_vertex.js";
-import nfs from "./shaders/neighbor_fragment.js";
-import gvs from "./shaders/glcm_vertex.js";
-import gfs from "./shaders/glcm_fragment.js";
-import cvs from "./shaders/correlation_vertex.js";
-import cfs from "./shaders/correlation_fragment.js";
-import dvs from "./shaders/display_vertex.js";
-import dfs from "./shaders/display_fragment.js";
+import nvs from './shaders/neighbor_vertex.js'
+import nfs from './shaders/neighbor_fragment.js'
+import gvs from './shaders/glcm_vertex.js'
+import gfs from './shaders/glcm_fragment.js'
+import cvs from './shaders/correlation_vertex.js'
+import cfs from './shaders/correlation_fragment.js'
+import dvs from './shaders/display_vertex.js'
+import dfs from './shaders/display_fragment.js'
 
 export class GLCM {
   constructor(gl) {
-    var ext = gl.getExtension("OES_texture_float");
+    var ext = gl.getExtension('OES_texture_float')
     if (!ext) {
-      throw "requires OES_texture_float";
+      throw 'requires OES_texture_float'
     }
 
-    this.gl = gl;
+    this.gl = gl
   }
 
   async init() {
-    const { gl } = this;
+    const { gl } = this
 
-    this.quadBufferInfo = twgl.primitives.createXYQuadBufferInfo(gl);
+    this.quadBufferInfo = twgl.primitives.createXYQuadBufferInfo(gl)
 
-    this.neighborProgramInfo = twgl.createProgramInfo(gl, [nvs, nfs]);
-    this.glcmProgramInfo = twgl.createProgramInfo(gl, [gvs, gfs]);
-    this.correlationProgramInfo = twgl.createProgramInfo(gl, [cvs, cfs]);
-    this.displayProgramInfo = twgl.createProgramInfo(gl, [dvs, dfs]);
+    this.neighborProgramInfo = twgl.createProgramInfo(gl, [nvs, nfs])
+    this.glcmProgramInfo = twgl.createProgramInfo(gl, [gvs, gfs])
+    this.correlationProgramInfo = twgl.createProgramInfo(gl, [cvs, cfs])
+    this.displayProgramInfo = twgl.createProgramInfo(gl, [dvs, dfs])
   }
 
   loadImage(src) {
-    const gl = this.gl;
+    const gl = this.gl
 
     return new Promise((resolve, reject) => {
       twgl.createTexture(
@@ -44,29 +44,29 @@ export class GLCM {
           min: gl.NEAREST,
           mag: gl.NEAREST,
           wrap: gl.CLAMP_TO_EDGE,
-          crossOrigin: "",
+          crossOrigin: '',
         },
         (err, texture, image) => {
-          if (err) return reject(err);
+          if (err) return reject(err)
 
-          this.texture = texture;
-          this.image = image;
+          this.texture = texture
+          this.image = image
 
-          this.width = image.width;
-          this.height = image.height;
+          this.width = image.width
+          this.height = image.height
 
-          resolve({ image, texture });
+          resolve({ image, texture })
         }
-      );
-    });
+      )
+    })
   }
 
   findNeighbors({ angle, distance }, renderToCanvas = false) {
-    const { gl, width, height, quadBufferInfo } = this;
+    const { gl, width, height, quadBufferInfo } = this
 
-    gl.useProgram(this.neighborProgramInfo.program);
+    gl.useProgram(this.neighborProgramInfo.program)
 
-    twgl.setBuffersAndAttributes(gl, this.neighborProgramInfo, quadBufferInfo);
+    twgl.setBuffersAndAttributes(gl, this.neighborProgramInfo, quadBufferInfo)
 
     // image to hold the result of the neighbors program
     var neighborsFbi = renderToCanvas
@@ -83,9 +83,9 @@ export class GLCM {
           ],
           width,
           height
-        );
+        )
     if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
-      alert("can't render to floating point texture");
+      alert("can't render to floating point texture")
     }
 
     twgl.setUniforms(this.neighborProgramInfo, {
@@ -93,22 +93,18 @@ export class GLCM {
       u_distance: distance,
       u_textureSize: [width, height],
       u_texture: this.texture,
-    });
+    })
 
-    twgl.bindFramebufferInfo(gl, neighborsFbi);
+    twgl.bindFramebufferInfo(gl, neighborsFbi)
 
-    twgl.drawBufferInfo(gl, gl.TRIANGLES, quadBufferInfo);
+    twgl.drawBufferInfo(gl, gl.TRIANGLES, quadBufferInfo)
 
-    return neighborsFbi;
+    return neighborsFbi
   }
 
-  buildMatrices(
-    neighborsFbi,
-    { reach, step, levels = 16 },
-    renderToCanvas = false
-  ) {
-    this.levels = levels;
-    const { gl, width, height, glcmProgramInfo } = this;
+  buildMatrices(neighborsFbi, { reach, step, levels = 16 }, renderToCanvas = false) {
+    this.levels = levels
+    const { gl, width, height, glcmProgramInfo } = this
 
     // for each window, find the texture offset and glcm offset
     const { xSize, ySize, locations } = getWindows({
@@ -117,33 +113,29 @@ export class GLCM {
       reach,
       step,
       levels,
-    });
-    this.xSize = xSize;
-    this.ySize = ySize;
-    this.locations = locations;
+    })
+    this.xSize = xSize
+    this.ySize = ySize
+    this.locations = locations
 
     // source pixels for one window
-    const windowSize = 2 * reach + 1;
-    this.windowSize = windowSize;
-    const textureWindow = [];
+    const windowSize = 2 * reach + 1
+    this.windowSize = windowSize
+    const textureWindow = []
     for (let y = 0; y < windowSize; y++) {
       for (let x = 0; x < windowSize; x++) {
-        textureWindow.push([x, y]);
+        textureWindow.push([x, y])
       }
     }
     var texturePositionsBufferInfo = twgl.createBufferInfoFromArrays(gl, {
       texturePosition: { numComponents: 2, data: textureWindow.flat() },
-    });
+    })
 
-    gl.blendFunc(gl.ONE, gl.ONE);
-    gl.enable(gl.BLEND);
-    gl.useProgram(glcmProgramInfo.program);
+    gl.blendFunc(gl.ONE, gl.ONE)
+    gl.enable(gl.BLEND)
+    gl.useProgram(glcmProgramInfo.program)
 
-    twgl.setBuffersAndAttributes(
-      gl,
-      glcmProgramInfo,
-      texturePositionsBufferInfo
-    );
+    twgl.setBuffersAndAttributes(gl, glcmProgramInfo, texturePositionsBufferInfo)
 
     // create an image to store GLCM matrices
     var glcmFbi = renderToCanvas
@@ -160,12 +152,12 @@ export class GLCM {
           ],
           xSize * levels,
           ySize * levels
-        );
+        )
     if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
-      alert("can't render to floating point texture");
+      alert("can't render to floating point texture")
     }
 
-    twgl.bindFramebufferInfo(gl, glcmFbi);
+    twgl.bindFramebufferInfo(gl, glcmFbi)
 
     // count pixel differences to build GLCMs
     locations.forEach(({ textureOffset, glcmOffset }) => {
@@ -177,39 +169,27 @@ export class GLCM {
         u_glcmOffset: glcmOffset,
         u_glcmSize: [xSize * levels, ySize * levels],
         u_pixelsInWindow: windowSize * windowSize,
-      });
-      twgl.drawBufferInfo(gl, gl.POINTS, texturePositionsBufferInfo);
-    });
-    gl.blendFunc(gl.ONE, gl.ZERO);
-    gl.disable(gl.BLEND);
+      })
+      twgl.drawBufferInfo(gl, gl.POINTS, texturePositionsBufferInfo)
+    })
+    gl.blendFunc(gl.ONE, gl.ZERO)
+    gl.disable(gl.BLEND)
 
-    return glcmFbi;
+    return glcmFbi
   }
 
   correlation(glcmFbi, renderToCanvas = false) {
-    const {
-      gl,
-      xSize,
-      ySize,
-      levels,
-      locations,
-      correlationProgramInfo,
-      windowSize,
-    } = this;
+    const { gl, xSize, ySize, levels, locations, correlationProgramInfo, windowSize } = this
 
     var correlationPointsBi = twgl.createBufferInfoFromArrays(gl, {
       glcmOffset: {
         numComponents: 2,
-        data: locations.map((l) => l.glcmOffset).flat(),
+        data: locations.map(l => l.glcmOffset).flat(),
       },
-    });
+    })
 
-    gl.useProgram(correlationProgramInfo.program);
-    twgl.setBuffersAndAttributes(
-      gl,
-      correlationProgramInfo,
-      correlationPointsBi
-    );
+    gl.useProgram(correlationProgramInfo.program)
+    twgl.setBuffersAndAttributes(gl, correlationProgramInfo, correlationPointsBi)
 
     var correlationFbi = renderToCanvas
       ? null
@@ -225,39 +205,39 @@ export class GLCM {
           ],
           xSize,
           ySize
-        );
+        )
     if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
-      alert("can't render to floating point texture");
+      alert("can't render to floating point texture")
     }
 
-    twgl.bindFramebufferInfo(gl, correlationFbi);
+    twgl.bindFramebufferInfo(gl, correlationFbi)
 
     twgl.setUniforms(correlationProgramInfo, {
       u_texture: glcmFbi.attachments[0],
       u_glcmSize: [xSize * levels, ySize * levels],
       u_levels: levels,
       u_pixelsInWindow: windowSize * windowSize,
-    });
+    })
 
-    twgl.drawBufferInfo(gl, gl.POINTS, correlationPointsBi);
+    twgl.drawBufferInfo(gl, gl.POINTS, correlationPointsBi)
 
-    return correlationFbi;
+    return correlationFbi
   }
 
   display(resultFbi) {
-    const { gl, quadBufferInfo, displayProgramInfo, xSize, ySize } = this;
+    const { gl, quadBufferInfo, displayProgramInfo, xSize, ySize } = this
 
-    gl.useProgram(displayProgramInfo.program);
+    gl.useProgram(displayProgramInfo.program)
 
-    twgl.setBuffersAndAttributes(gl, displayProgramInfo, quadBufferInfo);
+    twgl.setBuffersAndAttributes(gl, displayProgramInfo, quadBufferInfo)
 
-    twgl.bindFramebufferInfo(gl, null);
+    twgl.bindFramebufferInfo(gl, null)
 
     twgl.setUniforms(displayProgramInfo, {
       u_texture: resultFbi.attachments[0],
       u_textureSize: [xSize, ySize],
-    });
+    })
 
-    twgl.drawBufferInfo(gl, gl.TRIANGLES, quadBufferInfo);
+    twgl.drawBufferInfo(gl, gl.TRIANGLES, quadBufferInfo)
   }
 }

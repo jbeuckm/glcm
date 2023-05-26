@@ -2,47 +2,47 @@
   <head>
     <script src="https://twgljs.org/dist/twgl-full.min.js"></script>
     <script type="module">
-      import { GLCM } from "./src/GLCM.js";
+      import { GLCM } from './src/GLCM.js'
 
       let angle = 0.7853981633974483,
-        distance = 7;
+        distance = 7
 
       const reach = 8,
         step = 4,
-        levels = 16;
+        levels = 16
 
-      var twglCanvas = document.querySelector("#neighbors");
-      var gl = twglCanvas.getContext("webgl");
+      var twglCanvas = document.querySelector('#neighbors')
+      var gl = twglCanvas.getContext('webgl')
 
-      const glcm = new GLCM(gl);
+      const glcm = new GLCM(gl)
 
       const update = () => {
-        const fbi = glcm.findNeighbors({ angle, distance });
-        const mfbi = glcm.buildMatrices(fbi, { reach, step, levels });
-        const correlationFbi = glcm.correlation(mfbi);
-        glcm.display(correlationFbi);
-      };
+        const fbi = glcm.findNeighbors({ angle, distance })
+        const mfbi = glcm.buildMatrices(fbi, { reach, step, levels })
+        const correlationFbi = glcm.correlation(mfbi)
+        glcm.display(correlationFbi)
+      }
 
-      glcm.loadImage("./14896.jpg").then(async ({ image }) => {
-        document.querySelector("#original").appendChild(image);
+      glcm.loadImage('./14896.jpg').then(async ({ image }) => {
+        document.querySelector('#original').appendChild(image)
 
-        await glcm.init();
+        await glcm.init()
 
-        update();
-      });
+        update()
+      })
 
-      const distanceSlider = document.querySelector("#distance");
-      distanceSlider.addEventListener("input", (event) => {
-        distance = event.target.value;
+      const distanceSlider = document.querySelector('#distance')
+      distanceSlider.addEventListener('input', event => {
+        distance = event.target.value
 
-        update();
-      });
-      const angleSlider = document.querySelector("#angle");
-      angleSlider.addEventListener("input", (event) => {
-        angle = event.target.value;
+        update()
+      })
+      const angleSlider = document.querySelector('#angle')
+      angleSlider.addEventListener('input', event => {
+        angle = event.target.value
 
-        update();
-      });
+        update()
+      })
     </script>
   </head>
 
@@ -60,15 +60,7 @@
       />
 
       distance
-      <input
-        type="range"
-        id="distance"
-        name="distance"
-        min="1"
-        max="20"
-        value="7"
-        step=".5"
-      />
+      <input type="range" id="distance" name="distance" min="1" max="20" value="7" step=".5" />
     </div>
 
     <span id="original"> </span>

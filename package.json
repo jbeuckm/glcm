@@ -23,7 +23,14 @@
     "demo": "simple-server . 3000"
   },
   "dependencies": {
-    "twgl.js": "^5.3.1"
+    "ts-loader": "^9.4.3",
+    "twgl.js": "^5.3.1",
+    "typescript": "^5.0.4",
+    "webpack": "^5.84.1"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@webpack-cli/generators": "^3.0.4",
+    "webpack-cli": "^5.1.1"
+  }
 }
