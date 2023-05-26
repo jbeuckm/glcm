@@ -1,9 +1,23 @@
 {
   "name": "glcm",
-  "version": "0.0.1",
+  "version": "0.0.21",
   "description": "Gray-Level Co-Occurrence Matrix image analyzer with WebGL.",
+  "keywords": [
+    "webgl",
+    "glcm",
+    "texture analysis",
+    "computer vision"
+  ],
   "author": "Joseph Beuckman",
   "main": "src/GLCM.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jbeuckm/glcm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jbeuckm/glcm/issues",
+    "email": "joebeuckman@gmai.com"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "demo": "simple-server . 3000"
@@ -11,5 +25,5 @@
   "dependencies": {
     "twgl.js": "^5.3.1"
   },
-  "license": "MIT",
+  "license": "MIT"
 }
