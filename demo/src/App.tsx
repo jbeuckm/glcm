@@ -1,51 +1,63 @@
-import { useEffect, useRef, useState } from "react";
-import GLCM from "glcm";
+import { useEffect, useRef, useState } from 'react'
+import Dropdown from 'react-dropdown'
+import 'react-dropdown/style.css'
+
+import GLCM from 'glcm'
 
 export function App() {
-  const outputRef = useRef();
+  const outputRef = useRef()
 
-  const [imageSrc, setImageSrc] = useState("./14896.jpg");
-  const [angle, setAngle] = useState(Math.PI / 4);
-  const [distance, setDistance] = useState(7);
-  const [reach, setReach] = useState(8);
-  const [step, setStep] = useState(4);
-  const [levels, setLevels] = useState(16);
+  const [imageSrc, setImageSrc] = useState('./14896.jpg')
+  const [angle, setAngle] = useState(Math.PI / 4)
+  const [distance, setDistance] = useState(7)
+  const [reach, setReach] = useState(8)
+  const [step, setStep] = useState(4)
+  const [levels, setLevels] = useState(16)
+  const [stat, setStat] = useState('correlation')
 
-  const [glcm, setGlcm] = useState();
+  const [glcm, setGlcm] = useState()
 
   const update = () => {
-    if (!glcm) return;
-    const neighborsBi = glcm.findNeighbors({ angle, distance });
-    const mfbi = glcm.buildMatrices(neighborsBi, { reach, step, levels });
-    const correlationFbi = glcm.correlation(mfbi);
-    glcm.display(correlationFbi);
-  };
+    if (!glcm) return
+    const neighborsBi = glcm.findNeighbors({ angle, distance })
+    const mfbi = glcm.buildMatrices(neighborsBi, { reach, step, levels })
+    const statFbi = glcm[stat](mfbi)
+    glcm.display(statFbi)
+  }
+
+  const options = ['correlation', 'dissimilarity']
 
   useEffect(() => {
-    if (!outputRef.current || !imageSrc) return;
+    if (!outputRef.current || !imageSrc) return
 
-    var gl = outputRef.current.getContext("webgl");
-    const glcm = new GLCM(gl);
+    const glcm = new GLCM(outputRef.current)
 
     glcm.loadImage(imageSrc).then(async ({ image }) => {
-      document.getElementById("original").replaceChildren(image);
+      document.getElementById('original').replaceChildren(image)
 
-      await glcm.init();
+      await glcm.init()
 
-      setGlcm(glcm);
-    });
-  }, [outputRef, imageSrc]);
+      setGlcm(glcm)
+    })
+  }, [outputRef, imageSrc])
 
   useEffect(() => {
-    update(glcm);
-  }, [glcm, angle, distance, reach, step, levels]);
+    update(glcm)
+  }, [glcm, stat, angle, distance, reach, step, levels])
 
   return (
     <tr>
       <td id="original"></td>
-      <td style={{ verticalAlign: "top" }}>
+      <td style={{ verticalAlign: 'top' }}>
+        <Dropdown
+          options={options}
+          onChange={({ value }) => setStat(value)}
+          value={stat}
+          placeholder="Select an option"
+        />
+
         <div>
-          <span style={{ display: "inline-block" }}>
+          <span style={{ display: 'inline-block' }}>
             <div>angle {((angle * 180) / Math.PI).toPrecision(3)}</div>
             <input
               type="range"
@@ -53,7 +65,7 @@ export function App() {
               max={Math.PI}
               value={angle}
               step={Math.PI / 36}
-              onChange={(event) => setAngle(+event.target.value)}
+              onChange={event => setAngle(+event.target.value)}
             />
           </span>
 
@@ -65,7 +77,7 @@ export function App() {
               max={20}
               value={distance}
               step={0.5}
-              onChange={(event) => setDistance(+event.target.value)}
+              onChange={event => setDistance(+event.target.value)}
             />
           </span>
 
@@ -76,7 +88,7 @@ export function App() {
               min={3}
               max={20}
               value={reach}
-              onChange={(event) => setReach(+event.target.value)}
+              onChange={event => setReach(+event.target.value)}
             />
           </span>
 
@@ -87,7 +99,7 @@ export function App() {
               min={4}
               max={20}
               value={step}
-              onChange={(event) => setStep(+event.target.value)}
+              onChange={event => setStep(+event.target.value)}
             />
           </span>
 
@@ -99,7 +111,7 @@ export function App() {
               min={1}
               max={20}
               value={levels}
-              onChange={(event) => setLevel(+event.target.value)}
+              onChange={event => setLevel(+event.target.value)}
             />
           </span>
         </div>
@@ -108,7 +120,7 @@ export function App() {
         <canvas ref={outputRef} width="256" height="256"></canvas>
       </td>
     </tr>
-  );
+  )
 }
 
-export default App;
+export default App
