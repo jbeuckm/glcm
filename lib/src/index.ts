@@ -11,6 +11,8 @@ import statsVS from './shaders/stats_vertex.js'
 import correlationFS from './shaders/correlation_fragment.js'
 import dissimilarityFS from './shaders/dissimilarity_fragment.js'
 import homogeneityFS from './shaders/homogeneity_fragment.js'
+import asmFS from './shaders/ASM_fragment.js'
+import entropyFS from './shaders/entropy_fragment.js'
 import displayVS from './shaders/display_vertex.js'
 import displayFS from './shaders/display_fragment.js'
 
@@ -51,6 +53,7 @@ export class GLCM {
       dissimilarityFS({ levels }),
     ])
     this.homogeneityProgramInfo = twgl.createProgramInfo(gl, [statsVS(), homogeneityFS({ levels })])
+    this.asmProgramInfo = twgl.createProgramInfo(gl, [statsVS(), asmFS({ levels })])
 
     this.displayProgramInfo = twgl.createProgramInfo(gl, [displayVS(), displayFS()])
   }
@@ -250,6 +253,12 @@ export class GLCM {
   }
   homogeneity(glcmFbi, renderToCanvas = false) {
     return this.runStats(glcmFbi, this.homogeneityProgramInfo, renderToCanvas)
+  }
+  asm(glcmFbi, renderToCanvas = false) {
+    return this.runStats(glcmFbi, this.asmProgramInfo, renderToCanvas)
+  }
+  entropy(glcmFbi, renderToCanvas = false) {
+    return this.runStats(glcmFbi, this.entropyProgramInfo, renderToCanvas)
   }
 
   display(resultFbi) {
