@@ -4,10 +4,8 @@ const isProduction = process.env.NODE_ENV == 'production'
 
 module.exports = {
   mode: isProduction ? 'production' : 'development',
-  entry: './src/GLCM.ts',
+  entry: './src/index.ts',
   output: {
-    path: path.resolve(__dirname, 'lib'),
-    filename: 'glcm.js',
     library: { name: 'GLCM', type: 'umd', export: 'GLCM' },
   },
   module: {

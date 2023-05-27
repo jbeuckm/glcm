@@ -1,6 +1,6 @@
 // @ts-nocheck
-'use strict'
-// import * as twgl from 'twgl.js/dist/5.x/twgl-full.module.js'
+
+// import * as twgl from 'twgl.js'
 import { getWindows } from './getWindows.js'
 
 import nvs from './shaders/neighbor_vertex.js'
