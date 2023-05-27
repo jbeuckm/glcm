@@ -21,13 +21,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "demo": "simple-server . 3000"
+    "demo": "npx http-server -o demo.html"
   },
   "dependencies": {
     "ts-loader": "^9.4.3",
     "twgl.js": "^5.3.1",
     "typescript": "^5.0.4",
-    "webpack": "^5.84.1"
+    "webpack": "^5.84.1",
+    "webpack-dev-server": "^4.15.0"
   },
   "license": "MIT",
   "devDependencies": {
