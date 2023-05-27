@@ -54,6 +54,7 @@ export class GLCM {
     ])
     this.homogeneityProgramInfo = twgl.createProgramInfo(gl, [statsVS(), homogeneityFS({ levels })])
     this.asmProgramInfo = twgl.createProgramInfo(gl, [statsVS(), asmFS({ levels })])
+    this.entropyProgramInfo = twgl.createProgramInfo(gl, [statsVS(), entropyFS({ levels })])
 
     this.displayProgramInfo = twgl.createProgramInfo(gl, [displayVS(), displayFS()])
   }
