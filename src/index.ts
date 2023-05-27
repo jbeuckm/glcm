@@ -13,7 +13,16 @@ import dvs from './shaders/display_vertex.js'
 import dfs from './shaders/display_fragment.js'
 
 export class GLCM {
-  constructor(gl) {
+  static withOffscreenSize(width, height) {
+    const canvas = new OffscreenCanvas(width, height)
+    return new GLCM(canvas)
+  }
+
+  constructor(canvas) {
+    this.canvas = canvas
+
+    const gl = this.canvas.getContext('webgl')
+
     var ext = gl.getExtension('OES_texture_float')
     if (!ext) {
       throw 'requires OES_texture_float'
@@ -239,5 +248,9 @@ export class GLCM {
     })
 
     twgl.drawBufferInfo(gl, gl.TRIANGLES, quadBufferInfo)
+  }
+
+  getImageBitmap() {
+    return this.canvas.transferToImageBitmap()
   }
 }

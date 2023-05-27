@@ -11,20 +11,23 @@
         step = 4,
         levels = 16
 
-      var twglCanvas = document.querySelector('#neighbors')
-      var gl = twglCanvas.getContext('webgl')
-
-      const glcm = new GLCM(gl)
+      const glcm = GLCM.withOffscreenSize(256, 256)
 
       const update = () => {
         const fbi = glcm.findNeighbors({ angle, distance })
         const mfbi = glcm.buildMatrices(fbi, { reach, step, levels })
         const correlationFbi = glcm.correlation(mfbi)
         glcm.display(correlationFbi)
+
+        const ib = glcm.getImageBitmap()
+
+        const outputCanvas = document.getElementById('output')
+        const outputCtx = outputCanvas.getContext('2d')
+        outputCtx.drawImage(ib, 0, 0)
       }
 
       glcm.loadImage('./14896.jpg').then(async ({ image }) => {
-        document.querySelector('#original').appendChild(image)
+        document.getElementById('original').appendChild(image)
 
         await glcm.init()
 
@@ -66,7 +69,7 @@
     <span id="original"> </span>
 
     <span>
-      <canvas id="neighbors" width="256" height="256"></canvas>
+      <canvas id="output" width="256" height="256"></canvas>
     </span>
   </body>
 </html>
