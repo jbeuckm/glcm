@@ -10,6 +10,7 @@ import glcmFS from './shaders/glcm_fragment.js'
 import statsVS from './shaders/stats_vertex.js'
 import correlationFS from './shaders/correlation_fragment.js'
 import dissimilarityFS from './shaders/dissimilarity_fragment.js'
+import homogeneityFS from './shaders/homogeneity_fragment.js'
 import displayVS from './shaders/display_vertex.js'
 import displayFS from './shaders/display_fragment.js'
 
@@ -43,11 +44,14 @@ export class GLCM {
 
     this.neighborProgramInfo = twgl.createProgramInfo(gl, [neighborVS(), neighborFS()])
     this.glcmProgramInfo = twgl.createProgramInfo(gl, [glcmVS({ levels }), glcmFS()])
+
     this.correlationProgramInfo = twgl.createProgramInfo(gl, [statsVS(), correlationFS({ levels })])
     this.dissimilarityProgramInfo = twgl.createProgramInfo(gl, [
       statsVS(),
       dissimilarityFS({ levels }),
     ])
+    this.homogeneityProgramInfo = twgl.createProgramInfo(gl, [statsVS(), homogeneityFS({ levels })])
+
     this.displayProgramInfo = twgl.createProgramInfo(gl, [displayVS(), displayFS()])
   }
 
@@ -161,8 +165,7 @@ export class GLCM {
           gl,
           [
             {
-              format: gl.LUMINANCE,
-              type: gl.UNSIGNED_BYTE,
+              type: gl.FLOAT,
               min: gl.NEAREST,
               mag: gl.NEAREST,
               wrap: gl.CLAMP_TO_EDGE,
@@ -195,13 +198,6 @@ export class GLCM {
     return glcmFbi
   }
 
-  correlation(glcmFbi, renderToCanvas = false) {
-    return this.runStats(glcmFbi, this.correlationProgramInfo, renderToCanvas)
-  }
-  dissimilarity(glcmFbi, renderToCanvas = false) {
-    return this.runStats(glcmFbi, this.dissimilarityProgramInfo, renderToCanvas)
-  }
-
   runStats(glcmFbi, statsProgramInfo, renderToCanvas = false) {
     const { gl, xSize, ySize, levels, locations, windowSize } = this
 
@@ -221,8 +217,7 @@ export class GLCM {
           gl,
           [
             {
-              format: gl.LUMINANCE,
-              type: gl.UNSIGNED_BYTE,
+              type: gl.FLOAT,
               min: gl.NEAREST,
               mag: gl.NEAREST,
               wrap: gl.CLAMP_TO_EDGE,
@@ -245,6 +240,16 @@ export class GLCM {
     twgl.drawBufferInfo(gl, gl.POINTS, statsPointsBi)
 
     return statsFbi
+  }
+
+  correlation(glcmFbi, renderToCanvas = false) {
+    return this.runStats(glcmFbi, this.correlationProgramInfo, renderToCanvas)
+  }
+  dissimilarity(glcmFbi, renderToCanvas = false) {
+    return this.runStats(glcmFbi, this.dissimilarityProgramInfo, renderToCanvas)
+  }
+  homogeneity(glcmFbi, renderToCanvas = false) {
+    return this.runStats(glcmFbi, this.homogeneityProgramInfo, renderToCanvas)
   }
 
   display(resultFbi) {

@@ -25,7 +25,7 @@ export function App() {
     glcm.display(statFbi)
   }
 
-  const options = ['correlation', 'dissimilarity']
+  const options = ['correlation', 'dissimilarity', 'homogeneity']
 
   useEffect(() => {
     if (!outputRef.current || !imageSrc) return
