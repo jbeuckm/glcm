@@ -1,6 +1,6 @@
 {
   "name": "glcm",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "description": "Gray-Level Co-Occurrence Matrix image analyzer with WebGL.",
   "keywords": [
     "webgl",
