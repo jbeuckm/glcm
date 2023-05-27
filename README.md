@@ -17,7 +17,7 @@ Install with yarn or npm:
 
 `npm install glcm`
 
-### Typical Usage
+### Usage
 
 ```javascript
 import GLCM from 'glcm'
