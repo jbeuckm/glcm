@@ -96,8 +96,8 @@ export function App() {
                 <div>reach {reach}</div>
                 <input
                   type="range"
-                  min={3}
-                  max={20}
+                  min={1}
+                  max={127}
                   value={reach}
                   onChange={event => setReach(+event.target.value)}
                 />
@@ -120,7 +120,7 @@ export function App() {
                   disabled
                   type="range"
                   min={1}
-                  max={20}
+                  max={256}
                   value={levels}
                   onChange={event => setLevel(+event.target.value)}
                 />

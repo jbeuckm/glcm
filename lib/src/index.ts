@@ -161,7 +161,8 @@ export class GLCM {
           gl,
           [
             {
-              type: gl.FLOAT,
+              format: gl.LUMINANCE,
+              type: gl.UNSIGNED_BYTE,
               min: gl.NEAREST,
               mag: gl.NEAREST,
               wrap: gl.CLAMP_TO_EDGE,
@@ -220,7 +221,8 @@ export class GLCM {
           gl,
           [
             {
-              type: gl.FLOAT,
+              format: gl.LUMINANCE,
+              type: gl.UNSIGNED_BYTE,
               min: gl.NEAREST,
               mag: gl.NEAREST,
               wrap: gl.CLAMP_TO_EDGE,
