@@ -16,7 +16,7 @@
       const update = () => {
         const fbi = glcm.findNeighbors({ angle, distance })
         const mfbi = glcm.buildMatrices(fbi, { reach, step, levels })
-        const statsFbi = glcm.correlation(mfbi)
+        const statsFbi = glcm.dissimilarity(mfbi)
         glcm.display(statsFbi)
 
         const ib = glcm.getImageBitmap()

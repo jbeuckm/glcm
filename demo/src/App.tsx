@@ -46,80 +46,93 @@ export function App() {
   }, [glcm, stat, angle, distance, reach, step, levels])
 
   return (
-    <tr>
-      <td id="original"></td>
-      <td style={{ verticalAlign: 'top' }}>
-        <Dropdown
-          options={options}
-          onChange={({ value }) => setStat(value)}
-          value={stat}
-          placeholder="Select an option"
-        />
-
-        <div>
-          <span style={{ display: 'inline-block' }}>
-            <div>angle {((angle * 180) / Math.PI).toPrecision(3)}</div>
+    <table>
+      <tbody>
+        <tr>
+          <td colSpan={3}>
             <input
-              type="range"
-              min={0}
-              max={Math.PI}
-              value={angle}
-              step={Math.PI / 36}
-              onChange={event => setAngle(+event.target.value)}
+              onChange={event => setImageSrc(event.target.value)}
+              value={imageSrc}
+              style={{ width: '100%' }}
             />
-          </span>
+          </td>
+        </tr>
+        <tr>
+          <td id="original"></td>
+          <td style={{ verticalAlign: 'top' }}>
+            <Dropdown
+              options={options}
+              onChange={({ value }) => setStat(value)}
+              value={stat}
+              placeholder="Select an option"
+            />
 
-          <span>
-            <div>distance {distance}</div>
-            <input
-              type="range"
-              min={1}
-              max={20}
-              value={distance}
-              step={0.5}
-              onChange={event => setDistance(+event.target.value)}
-            />
-          </span>
+            <div>
+              <span style={{ display: 'inline-block' }}>
+                <div>angle {((angle * 180) / Math.PI).toPrecision(3)}</div>
+                <input
+                  type="range"
+                  min={0}
+                  max={Math.PI}
+                  value={angle}
+                  step={Math.PI / 36}
+                  onChange={event => setAngle(+event.target.value)}
+                />
+              </span>
 
-          <span>
-            <div>reach {reach}</div>
-            <input
-              type="range"
-              min={3}
-              max={20}
-              value={reach}
-              onChange={event => setReach(+event.target.value)}
-            />
-          </span>
+              <span>
+                <div>distance {distance}</div>
+                <input
+                  type="range"
+                  min={1}
+                  max={20}
+                  value={distance}
+                  step={0.5}
+                  onChange={event => setDistance(+event.target.value)}
+                />
+              </span>
 
-          <span>
-            <div>step {step}</div>
-            <input
-              type="range"
-              min={4}
-              max={20}
-              value={step}
-              onChange={event => setStep(+event.target.value)}
-            />
-          </span>
+              <span>
+                <div>reach {reach}</div>
+                <input
+                  type="range"
+                  min={3}
+                  max={20}
+                  value={reach}
+                  onChange={event => setReach(+event.target.value)}
+                />
+              </span>
 
-          <span>
-            <div>levels {levels}</div>
-            <input
-              disabled
-              type="range"
-              min={1}
-              max={20}
-              value={levels}
-              onChange={event => setLevel(+event.target.value)}
-            />
-          </span>
-        </div>
-      </td>
-      <td>
-        <canvas ref={outputRef} width="256" height="256"></canvas>
-      </td>
-    </tr>
+              <span>
+                <div>step {step}</div>
+                <input
+                  type="range"
+                  min={4}
+                  max={20}
+                  value={step}
+                  onChange={event => setStep(+event.target.value)}
+                />
+              </span>
+
+              <span>
+                <div>levels {levels}</div>
+                <input
+                  disabled
+                  type="range"
+                  min={1}
+                  max={20}
+                  value={levels}
+                  onChange={event => setLevel(+event.target.value)}
+                />
+              </span>
+            </div>
+          </td>
+          <td>
+            <canvas ref={outputRef} width="256" height="256"></canvas>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   )
 }
 
