@@ -3,14 +3,15 @@
 // import * as twgl from 'twgl.js'
 import { getWindows } from './getWindows.js'
 
-import nvs from './shaders/neighbor_vertex.js'
-import nfs from './shaders/neighbor_fragment.js'
-import gvs from './shaders/glcm_vertex.js'
-import gfs from './shaders/glcm_fragment.js'
-import cvs from './shaders/correlation_vertex.js'
-import cfs from './shaders/correlation_fragment.js'
-import dvs from './shaders/display_vertex.js'
-import dfs from './shaders/display_fragment.js'
+import neighborVS from './shaders/neighbor_vertex.js'
+import neighborFS from './shaders/neighbor_fragment.js'
+import glcmVS from './shaders/glcm_vertex.js'
+import glcmFS from './shaders/glcm_fragment.js'
+import statsVS from './shaders/stats_vertex.js'
+import correlationFS from './shaders/correlation_fragment.js'
+import dissimilarityFS from './shaders/dissimilarity_fragment.js'
+import displayVS from './shaders/display_vertex.js'
+import displayFS from './shaders/display_fragment.js'
 
 const DEFAULT_LEVELS = 16
 
@@ -40,10 +41,14 @@ export class GLCM {
 
     this.quadBufferInfo = twgl.primitives.createXYQuadBufferInfo(gl)
 
-    this.neighborProgramInfo = twgl.createProgramInfo(gl, [nvs(), nfs()])
-    this.glcmProgramInfo = twgl.createProgramInfo(gl, [gvs({ levels }), gfs()])
-    this.correlationProgramInfo = twgl.createProgramInfo(gl, [cvs(), cfs({ levels })])
-    this.displayProgramInfo = twgl.createProgramInfo(gl, [dvs(), dfs()])
+    this.neighborProgramInfo = twgl.createProgramInfo(gl, [neighborVS(), neighborFS()])
+    this.glcmProgramInfo = twgl.createProgramInfo(gl, [glcmVS({ levels }), glcmFS()])
+    this.correlationProgramInfo = twgl.createProgramInfo(gl, [statsVS(), correlationFS({ levels })])
+    this.dissimilarityProgramInfo = twgl.createProgramInfo(gl, [
+      statsVS(),
+      dissimilarityFS({ levels }),
+    ])
+    this.displayProgramInfo = twgl.createProgramInfo(gl, [displayVS(), displayFS()])
   }
 
   loadImage(src) {
@@ -190,19 +195,26 @@ export class GLCM {
   }
 
   correlation(glcmFbi, renderToCanvas = false) {
-    const { gl, xSize, ySize, levels, locations, correlationProgramInfo, windowSize } = this
+    return this.runStats(glcmFbi, this.correlationProgramInfo, renderToCanvas)
+  }
+  dissimilarity(glcmFbi, renderToCanvas = false) {
+    return this.runStats(glcmFbi, this.dissimilarityProgramInfo, renderToCanvas)
+  }
 
-    var correlationPointsBi = twgl.createBufferInfoFromArrays(gl, {
+  runStats(glcmFbi, statsProgramInfo, renderToCanvas = false) {
+    const { gl, xSize, ySize, levels, locations, windowSize } = this
+
+    var statsPointsBi = twgl.createBufferInfoFromArrays(gl, {
       glcmOffset: {
         numComponents: 2,
         data: locations.map(l => l.glcmOffset).flat(),
       },
     })
 
-    gl.useProgram(correlationProgramInfo.program)
-    twgl.setBuffersAndAttributes(gl, correlationProgramInfo, correlationPointsBi)
+    gl.useProgram(statsProgramInfo.program)
+    twgl.setBuffersAndAttributes(gl, statsProgramInfo, statsPointsBi)
 
-    var correlationFbi = renderToCanvas
+    var statsFbi = renderToCanvas
       ? null
       : twgl.createFramebufferInfo(
           gl,
@@ -221,16 +233,16 @@ export class GLCM {
       alert("can't render to floating point texture")
     }
 
-    twgl.bindFramebufferInfo(gl, correlationFbi)
+    twgl.bindFramebufferInfo(gl, statsFbi)
 
-    twgl.setUniforms(correlationProgramInfo, {
+    twgl.setUniforms(statsProgramInfo, {
       u_texture: glcmFbi.attachments[0],
       u_glcmSize: [xSize * levels, ySize * levels],
     })
 
-    twgl.drawBufferInfo(gl, gl.POINTS, correlationPointsBi)
+    twgl.drawBufferInfo(gl, gl.POINTS, statsPointsBi)
 
-    return correlationFbi
+    return statsFbi
   }
 
   display(resultFbi) {

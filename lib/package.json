@@ -1,6 +1,6 @@
 {
   "name": "glcm",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Gray-Level Co-Occurrence Matrix image analyzer with WebGL.",
   "keywords": [
     "webgl",
@@ -16,7 +16,7 @@
   },
   "bugs": {
     "url": "https://github.com/jbeuckm/glcm/issues",
-    "email": "joebeuckman@gmai.com"
+    "email": "joebeuckman@gmail.com"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
