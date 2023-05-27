@@ -12,6 +12,8 @@ import cfs from './shaders/correlation_fragment.js'
 import dvs from './shaders/display_vertex.js'
 import dfs from './shaders/display_fragment.js'
 
+const DEFAULT_LEVELS = 16
+
 export class GLCM {
   static withOffscreenSize(width, height) {
     const canvas = new OffscreenCanvas(width, height)
@@ -31,15 +33,17 @@ export class GLCM {
     this.gl = gl
   }
 
-  async init() {
+  async init({ levels } = { levels: DEFAULT_LEVELS }) {
     const { gl } = this
+
+    this.levels = levels
 
     this.quadBufferInfo = twgl.primitives.createXYQuadBufferInfo(gl)
 
-    this.neighborProgramInfo = twgl.createProgramInfo(gl, [nvs, nfs])
-    this.glcmProgramInfo = twgl.createProgramInfo(gl, [gvs, gfs])
-    this.correlationProgramInfo = twgl.createProgramInfo(gl, [cvs, cfs])
-    this.displayProgramInfo = twgl.createProgramInfo(gl, [dvs, dfs])
+    this.neighborProgramInfo = twgl.createProgramInfo(gl, [nvs(), nfs()])
+    this.glcmProgramInfo = twgl.createProgramInfo(gl, [gvs({ levels }), gfs()])
+    this.correlationProgramInfo = twgl.createProgramInfo(gl, [cvs(), cfs({ levels })])
+    this.displayProgramInfo = twgl.createProgramInfo(gl, [dvs(), dfs()])
   }
 
   loadImage(src) {
@@ -111,9 +115,8 @@ export class GLCM {
     return neighborsFbi
   }
 
-  buildMatrices(neighborsFbi, { reach, step, levels = 16 }, renderToCanvas = false) {
-    this.levels = levels
-    const { gl, width, height, glcmProgramInfo } = this
+  buildMatrices(neighborsFbi, { reach, step }, renderToCanvas = false) {
+    const { gl, width, height, glcmProgramInfo, levels } = this
 
     // for each window, find the texture offset and glcm offset
     const { xSize, ySize, locations } = getWindows({
@@ -174,7 +177,6 @@ export class GLCM {
         u_texture: neighborsFbi.attachments[0],
         u_textureSize: [neighborsFbi.width, neighborsFbi.height],
         u_textureOffset: textureOffset,
-        u_levels: levels,
         u_glcmOffset: glcmOffset,
         u_glcmSize: [xSize * levels, ySize * levels],
         u_pixelsInWindow: windowSize * windowSize,
@@ -224,8 +226,6 @@ export class GLCM {
     twgl.setUniforms(correlationProgramInfo, {
       u_texture: glcmFbi.attachments[0],
       u_glcmSize: [xSize * levels, ySize * levels],
-      u_levels: levels,
-      u_pixelsInWindow: windowSize * windowSize,
     })
 
     twgl.drawBufferInfo(gl, gl.POINTS, correlationPointsBi)
